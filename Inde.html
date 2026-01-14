@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sadayah Scoreboard</title>
+
+<style>
+/* Reset and base */
+body, html {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #1a1a2e; /* Dark background */
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Header */
+header {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 2rem;
+    font-weight: bold;
+    background: linear-gradient(90deg, #0f3460, #162447);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+header input {
+    margin-top: 10px;
+    font-size: 1.5rem;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    text-align: center;
+    width: 80%;
+    background: black;
+    color: #fff;
+    box-shadow: 0 0 10px #0f3460;
+}
+
+/* Container */
+.container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 30px 10px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Team Card */
+.team {
+    background0f3460
+    border-radius: 20px;
+    width: 280px;
+    text-align: center;
+    padding: 25px 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.team:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+}
+.team input {
+    width: 95%;
+    border: none;
+    border-bottom: 2px solid #fff;
+    background: transparent;
+    font-size: 1.2rem;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.score {
+    font-size: 3rem;
+    font-weight: bold;
+    padding: 15px 0;
+    border-radius: 10px;
+    background: #e94560;
+    color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+.buttons button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #1e88e5;
+    color: #fff;
+    transition: 0.3s;
+}
+.buttons button:hover { background: #3c3b6e; }
+
+/* Middle Section */
+.middle {
+    text-align: center;
+    min-width: 220px;
+    flex: 1;
+}
+.vs { font-size: 2rem; font-weight: bold; margin-bottom: 20px; color: #ffdd59; }
+
+/* Circular Timer */
+.circular-timer {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 15px auto;
+}
+.circular-timer svg { transform: rotate(-90deg); width: 140px; height: 140px; }
+.circular-timer circle { fill: none; stroke-width: 12; stroke-linecap: round; }
+.circular-timer .bg { stroke: rgba(255,255,255,0.2); }
+.circular-timer .progress { stroke: #ffdd59; transition: stroke-dashoffset 1s linear; }
+.circular-timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-weight: bold; }
+
+/* Timer Controls */
+.timer-controls button {
+    padding: 10px 15px;
+    margin: 5px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+}
+.start { background: #4caf50; }
+.pause { background: #f39c12; }
+.reset { background: #e84118; }
+
+/* Margin Box */
+.margin-box {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 15px;
+    display: inline-block;
+    background: #16a085;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Winner Announcement */
+#congratsBoard {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: #162447;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    z-index: 9999;
+}
+#winnerMessage { font-size: 3rem; color: #ffdd59; margin-bottom: 10px; text-shadow:1px 2px black; }
+#winnerMargin { font-size: 1.6rem; margin-bottom: 20px; }
+.final-scores { display: flex; justify-content: space-between; width: 80%; max-width: 800px; gap: 20px; flex-wrap: wrap; }
+.final-team { background: #0f3460; border-radius: 20px; padding: 20px; flex: 1; min-width: 250px; }
+.final-team h2 { font-size: 2rem; margin-bottom: 10px; }
+.final-score { font-size: 2.2rem; background: #e94560; color: #fff; padding: 10px; border-radius: 10px; }
+
+.replay-btn {
+    margin-top: 30px;
+    padding: 15px 35px;
+    background: #ffdd59;
+    color: #162447;
+    border: none;
+    font-size: 1.3rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.replay-btn:hover { background: #fff; color: #0f3460; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <input type="text" id="competitionTitle" value="Sadayah Scoreboard">
+</header>
+
+<div class="container" id="mainScoreboard">
+
+  <!-- Team 1 -->
+  <div class="team">
+    <input type="text" id="team1Name" value="Team A">
+    <div class="score" id="score1">0</div>
+    <div class="buttons">
+      <button onclick="updateScore(1,10)">+10</button>
+      <button onclick="updateScore(1,15)">+15</button>
+      <button onclick="updateScore(1,-5)">-5</button>
+    </div>
+  </div>
+
+  <!-- Middle -->
+  <div class="middle">
+    <div class="vs">V.S</div>
+    <div class="circular-timer">
+      <svg>
+        <circle class="bg" cx="70" cy="70" r="60"></circle>
+        <circle class="progress" cx="70" cy="70" r="60"></circle>
+      </svg>
+      <div class="circular-timer-text" id="timeText">15</div>
+    </div>
+    <div class="timer-controls">
+      <button class="start" onclick="startTimer()">Start</button>
+      <button class="pause" onclick="pauseTimer()">Pause</button>
+      <button class="reset" onclick="resetTimer()">Reset</button>
+    </div>
+    <div id="marginBox" class="margin-box">Margin: 0</div>
+    <button class="announce" onclick="announceWinner()">End Match</button>
+  </div>
+
+  <!-- Team 2 -->
+  <div class="team">
+    <input type="text" id="team2Name" value="Team B">
+    <div class="score" id="score2">0</div>
+    <div class="buttons">
+      <button onclick="updateScore(2,10)">+10</button>
+      <button onclick="updateScore(2,15)">+15</button>
+      <button onclick="updateScore(2,-5)">-5</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Winner Board -->
+<div id="congratsBoard">
+  <h1 id="winnerMessage"></h1>
+  <p id="winnerMargin"></p>
+  <div class="final-scores">
+    <div class="final-team"><h2 id="finalTeam1"></h2><div id="finalScore1"></div></div>
+    <div class="final-team"><h2 id="finalTeam2"></h2><div id="finalScore2"></div></div>
+  </div>
+  <button class="replay-btn" onclick="replayMatch()">Replay</button>
+</div>
+
+<audio id="timerSound" src="time.mp3"></audio>
+
+<script>
+// JS functionality
+let score1=0, score2=0, timeLeft=15, timer=null, isRunning=false;
+const totalTime=15;
+
+const circle=document.querySelector(".progress");
+const radius=60;
+const circumference=2*Math.PI*radius;
+circle.style.strokeDasharray=circumference;
+circle.style.strokeDashoffset=0;
+
+const sound = document.getElementById("timerSound");
+
+function updateCircle(){
+  const offset=circumference*(timeLeft/totalTime);
+  circle.style.strokeDashoffset=circumference-offset;
+  document.getElementById("timeText").textContent=timeLeft;
+}
+
+function startTimer(){
+  if(isRunning) return;
+  isRunning = true;
+  sound.currentTime = 0;
+  sound.play();
+  timer = setInterval(()=>{
+    if(timeLeft > 0){
+      timeLeft--;
+      updateCircle();
+    } else {
+      clearInterval(timer);
+      isRunning = false;
+      sound.pause();
+    }
+  },1000);
+}
+
+function pauseTimer(){
+  clearInterval(timer);
+  isRunning = false;
+  sound.pause();
+}
+
+function resetTimer(){
+  clearInterval(timer);
+  timeLeft = totalTime;
+  updateCircle();
+  isRunning = false;
+  sound.pause();
+  sound.currentTime = 0;
+}
+
+function updateScore(team,points){
+  if(team===1){
+    score1+=points;
+    document.getElementById("score1").textContent = score1;
+  } else {
+    score2+=points;
+    document.getElementById("score2").textContent = score2;
+  }
+  updateMargin();
+}
+
+function updateMargin(){
+  const margin = Math.abs(score1 - score2);
+  const box = document.getElementById("marginBox");
+  box.textContent = `Margin: ${margin}`;
+  if(margin >= 80){ box.style.background="#e84118"; box.style.color="#fff"; }
+  else if(margin >= 50){ box.style.background="#fbc531"; box.style.color="#000"; }
+  else { box.style.background="#16a085"; box.style.color="#fff"; }
+}
+
+function announceWinner(){
+  document.getElementById("mainScoreboard").style.display = "none";
+  const t1=document.getElementById("team1Name").value;
+  const t2=document.getElementById("team2Name").value;
+  const margin=Math.abs(score1-score2);
+  document.getElementById("finalTeam1").textContent=t1;
+  document.getElementById("finalTeam2").textContent=t2;
+  document.getElementById("finalScore1").textContent=score1;
+  document.getElementById("finalScore2").textContent=score2;
+  if(score1>score2){
+    document.getElementById("winnerMessage").textContent=`🎉 ${t1} Wins!`;
+    document.getElementById("winnerMargin").textContent=`Margin: ${margin}`;
+  } else if(score2>score1){
+    document.getElementById("winnerMessage").textContent=`🎉 ${t2} Wins!`;
+    document.getElementById("winnerMargin").textContent=`Margin: ${margin}`;
+  } else {
+    document.getElementById("winnerMessage").textContent="🤝 Game Tied!";
+    document.getElementById("winnerMargin").textContent="";
+  }
+  document.getElementById("congratsBoard").style.display="flex";
+}
+
+function replayMatch(){
+  score1=0; score2=0;
+  timeLeft=totalTime;
+  updateCircle();
+  document.getElementById("score1").textContent=0;
+  document.getElementById("score2").textContent=0;
+  updateMargin();
+  document.getElementById("mainScoreboard").style.display="flex";
+  document.getElementById("congratsBoard").style.display="none";
+}
+
+updateCircle();
+</script>
+
+</body>
+</html>
